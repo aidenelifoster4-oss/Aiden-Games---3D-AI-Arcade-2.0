@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050611">
+<title>Aiden Games — 3D AI Arcade</title>
+<style>
+:root{--bg:#050611;--panel:#0c1230;--panel2:#131b43;--line:#30437a;--cyan:#3cecff;--pink:#ff4ddd;--yellow:#ffd83d;--green:#91ff5b;--red:#ff536e;--text:#f8fbff;--muted:#aeb9dc}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 15% 0,#283d8d 0,transparent 35%),radial-gradient(circle at 90% 10%,#691466 0,transparent 34%),var(--bg);color:var(--text);font-family:Inter,system-ui,Arial,sans-serif}
+header{position:sticky;top:0;z-index:30;background:#050611e8;border-bottom:1px solid #273568;backdrop-filter:blur(16px)}.nav{max-width:1250px;margin:auto;padding:12px 18px;display:flex;justify-content:space-between;align-items:center}.logo{display:flex;gap:10px;align-items:center;font-weight:1000;letter-spacing:2px}.mark{width:44px;height:44px;border:2px solid var(--cyan);border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#062b58,#a0099e);box-shadow:0 0 28px #3cecff66}.logo small{display:block;color:var(--yellow);font-size:8px;letter-spacing:4px}.logo span{font-size:20px}nav{display:flex;gap:3px}nav a{padding:9px 11px;text-decoration:none;font-size:13px;font-weight:800;border-radius:9px}nav a:hover{background:#fff1;color:var(--cyan)}
+main{max-width:1250px;margin:auto;padding:25px 18px 70px}.hero{min-height:430px;display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center}.badge{display:inline-block;border:1px solid #46649c;background:#10183b;color:#c9f7ff;padding:7px 11px;border-radius:99px;font-size:11px;font-weight:900}
+h1{font-size:clamp(55px,9vw,108px);line-height:.8;letter-spacing:-5px;font-style:italic;margin:17px 0;text-shadow:5px 5px #43197d,0 0 35px #3cecff66}h1 em{display:block;color:var(--yellow);font-style:normal;font-size:.5em;letter-spacing:6px}.hero p{max-width:610px;color:#c2cae9;font-size:18px;line-height:1.55}.btn{border:1px solid var(--cyan);background:var(--cyan);color:#061018;padding:12px 17px;border-radius:11px;font-weight:950;cursor:pointer;box-shadow:0 0 25px #3cecff3b}.btn:hover{filter:brightness(1.08)}
+.hero3d{height:335px;display:grid;place-items:center;perspective:900px}.cube{width:180px;height:180px;position:relative;transform-style:preserve-3d;transform:rotateX(-22deg) rotateY(35deg);animation:spin 11s linear infinite}.cube div{position:absolute;inset:0;border:2px solid var(--cyan);background:linear-gradient(135deg,#0a3261aa,#a108a766);box-shadow:inset 0 0 35px #3cecff33,0 0 30px #3cecff22;display:grid;place-items:center;font-size:46px}.front{transform:translateZ(90px)}.back{transform:rotateY(180deg) translateZ(90px)}.right{transform:rotateY(90deg) translateZ(90px)}.left{transform:rotateY(-90deg) translateZ(90px)}.top{transform:rotateX(90deg) translateZ(90px)}.bottom{transform:rotateX(-90deg) translateZ(90px)}@keyframes spin{to{transform:rotateX(-22deg) rotateY(395deg)}}
+.section-title{text-align:center;font-size:31px;margin:30px 0 16px}.toolbar{display:flex;justify-content:center;margin-bottom:18px}.search{width:min(480px,100%);padding:12px;border-radius:11px;border:1px solid var(--line);background:#090e25;color:white;outline:0}.search:focus{border-color:var(--cyan)}
+.games{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;perspective:1000px}.card{background:linear-gradient(180deg,#121a41,#080b1e);border:1px solid var(--line);border-radius:18px;overflow:hidden;transform-style:preserve-3d;transition:transform .18s,border-color .18s;box-shadow:0 12px 35px #0006}.card:hover{transform:rotateX(5deg) rotateY(-5deg) translateY(-7px);border-color:var(--cyan)}.card.hidden{display:none}.art{height:150px;display:grid;place-items:center;font-size:63px;background:radial-gradient(circle,#294a91,#070a1d);position:relative}.art:after{content:"3D";position:absolute;right:10px;top:9px;font-size:9px;color:var(--cyan);border:1px solid var(--cyan);padding:3px 5px;border-radius:5px}.cardbody{padding:15px}.tag{font-size:9px;color:#c5d3f5;border:1px solid #3b4b78;border-radius:99px;padding:3px 6px}.card h3{margin:9px 0 6px}.card p{min-height:38px;color:var(--muted);font-size:13px;line-height:1.4}.play{width:100%;padding:10px;border:1px solid var(--cyan);border-radius:10px;background:#071526;color:var(--cyan);font-weight:900;cursor:pointer}.play:hover{background:#0c2945}
+#player{margin-top:32px;padding:18px;border:1px solid var(--line);border-radius:20px;background:#070a1b;box-shadow:0 20px 60px #0009}#player[hidden]{display:none}.playerhead{display:flex;justify-content:space-between;align-items:center}.close{background:#252d52;border:0;color:#fff;padding:8px 12px;border-radius:9px;cursor:pointer}.hud{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px}.hud span{background:#141c41;padding:7px 11px;border-radius:8px}.ai{max-width:760px;margin:8px auto 12px;padding:9px 12px;border:1px solid #3c4e85;border-radius:10px;background:#0c1534;color:#bfeeff;text-align:center;font-size:12px}.ai b{color:var(--cyan)}
+.gamebox{height:520px;position:relative;overflow:hidden;border:1px solid #283862;border-radius:16px;background:#03050d}.gamebox canvas{width:100%;height:100%;display:block}.gamehint{text-align:center;color:#98a7d5;font-size:13px;margin:9px}.result{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:#03040ddd;text-align:center;padding:20px}.result-box{background:#111a40;border:1px solid var(--cyan);border-radius:17px;padding:25px;box-shadow:0 0 40px #3cecff2d}
+.controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:10px}.control{border:1px solid #496091;background:#121b3c;color:#fff;border-radius:9px;padding:9px 13px;cursor:pointer}.control:hover{border-color:var(--cyan)}
+#scoreBoard{display:grid;grid-template-columns:repeat(8,1fr);gap:9px}.score-card{background:#11183a;border:1px solid #293866;border-radius:11px;padding:11px;text-align:center;color:#c5d0ef;font-size:10px}.score-card b{display:block;color:var(--yellow);font-size:18px;margin-top:3px}
+footer{text-align:center;padding:35px;color:#7e8bb5;border-top:1px solid #202a58}footer b{color:#fff}
+@media(max-width:980px){.games{grid-template-columns:repeat(3,1fr)}#scoreBoard{grid-template-columns:repeat(4,1fr)}}@media(max-width:760px){.hero{grid-template-columns:1fr}.hero3d{height:245px}.games{grid-template-columns:repeat(2,1fr)}nav{display:none}.gamebox{height:460px}}@media(max-width:500px){main{padding:16px 12px 55px}.games{grid-template-columns:1fr}.gamebox{height:420px}.cube{width:135px;height:135px}.front{transform:translateZ(67px)}.back{transform:rotateY(180deg) translateZ(67px)}.right{transform:rotateY(90deg) translateZ(67px)}.left{transform:rotateY(-90deg) translateZ(67px)}.top{transform:rotateX(90deg) translateZ(67px)}.bottom{transform:rotateX(-90deg) translateZ(67px)}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* AIDEN SOCIAL */
+.social-app{margin:55px 0 10px;padding:28px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:linear-gradient(145deg,rgba(20,24,48,.96),rgba(10,12,25,.96));box-shadow:0 20px 60px rgba(0,0,0,.28)}
+.social-head{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:22px}.social-head h2{margin:0;font-size:clamp(28px,4vw,42px)}.social-head p{margin:5px 0 0;color:var(--muted)}
+.social-badge{padding:8px 12px;border-radius:999px;background:rgba(124,92,255,.18);border:1px solid rgba(124,92,255,.35);font-size:12px;font-weight:800;letter-spacing:.08em}
+.social-layout{display:grid;grid-template-columns:260px 1fr;gap:22px}.social-panel,.social-composer,.social-post{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:18px}.social-panel h3,.social-composer h3{margin-top:0}.social-avatar{width:68px;height:68px;border-radius:50%;display:grid;place-items:center;font-size:34px;background:rgba(124,92,255,.18);margin-bottom:12px}.social-input,.social-textarea{width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.12);border-radius:12px;background:#0b0e1d;color:inherit;padding:11px 12px;outline:none}.social-textarea{min-height:90px;resize:vertical}.social-btn{border:0;border-radius:12px;padding:10px 14px;background:var(--accent,#7c5cff);color:#fff;font-weight:800;cursor:pointer}.social-btn.secondary{background:rgba(255,255,255,.08)}.social-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.social-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0}.social-stat{padding:10px;border-radius:12px;background:rgba(255,255,255,.05);text-align:center}.social-stat b{display:block;font-size:18px}.social-stat span{font-size:11px;color:var(--muted)}.social-notes{margin-top:16px}.social-note{font-size:12px;color:var(--muted);padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07)}.social-feed{display:grid;gap:14px;margin-top:14px}.social-post-head{display:flex;align-items:center;gap:10px}.social-mini-avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(124,92,255,.18)}.social-post-head small{display:block;color:var(--muted)}.social-post-text{white-space:pre-wrap;line-height:1.6;margin:14px 0}.social-actions{display:flex;gap:8px;border-top:1px solid rgba(255,255,255,.08);padding-top:12px}.social-comments{margin-top:12px;display:grid;gap:8px}.social-comment{font-size:13px;background:rgba(255,255,255,.045);padding:9px 11px;border-radius:10px}.social-comment strong{margin-right:5px}.social-empty{text-align:center;color:var(--muted);padding:30px}.social-search{margin-top:14px}
+@media(max-width:760px){.social-layout{grid-template-columns:1fr}.social-app{padding:18px}}
+
+.school-app{margin:55px 0 10px;padding:28px;border:1px solid #30437a;border-radius:24px;background:linear-gradient(145deg,#111b43,#080b1e);box-shadow:0 20px 60px #0007}.school-head{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.school-head h2{margin:0;font-size:clamp(30px,5vw,46px)}.school-head p{color:var(--muted)}.school-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:20px}.school-card{padding:18px;border:1px solid #30437a;border-radius:17px;background:#0c1330}.school-card .icon{font-size:42px}.school-card h3{margin:10px 0 6px}.school-card p{color:var(--muted);font-size:13px;line-height:1.5}.school-btn{width:100%;padding:10px;border:1px solid var(--cyan);border-radius:10px;background:#071526;color:var(--cyan);font-weight:900;cursor:pointer}.school-panel{margin-top:18px;padding:18px;border-radius:16px;background:#080e25;border:1px solid #293866;display:none}.school-panel.show{display:block}.school-question{font-size:20px;font-weight:800;margin-bottom:12px}.school-options{display:flex;gap:9px;flex-wrap:wrap}.school-option{padding:10px 14px;border:1px solid #496091;border-radius:10px;background:#121b3c;color:#fff;cursor:pointer}.school-progress{height:8px;background:#141c41;border-radius:99px;overflow:hidden;margin:12px 0}.school-progress span{display:block;height:100%;background:var(--cyan);width:0}.school-schedule{display:grid;gap:8px}.school-class{display:flex;justify-content:space-between;padding:10px 12px;border-radius:10px;background:#11183a}.school-class b{color:var(--yellow)}
+@media(max-width:980px){.school-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){.school-grid{grid-template-columns:1fr}}
+</style>
+
+<style>
+/* AI ENHANCEMENT PACK */
+.ai-core{position:relative;overflow:hidden}
+.ai-core:before{content:'AI ONLINE';position:absolute;top:10px;right:12px;padding:5px 9px;border:1px solid #3cecff;border-radius:999px;color:#3cecff;background:#06152bcc;font:800 10px system-ui;letter-spacing:1px;box-shadow:0 0 18px #3cecff44;z-index:3;animation:aiPulse 1.8s infinite}
+@keyframes aiPulse{50%{opacity:.45;box-shadow:0 0 35px #3cecff77}}
+.ai-orb{display:inline-block;width:8px;height:8px;border-radius:50%;background:#3cecff;box-shadow:0 0 12px #3cecff;vertical-align:middle;margin-right:6px}
+.ai-feed{max-width:760px;margin:8px auto;padding:8px 12px;border:1px solid #263b6c;border-radius:10px;background:#080f28;color:#a9b8e8;font:12px system-ui;text-align:left}
+.ai-feed b{color:#3cecff}
+</style>
+<script>
+/* Aiden Adaptive AI: lightweight offline behavior engine */
+window.AidenAI={
+  state:{gamesPlayed:0,streak:0,recentScore:0,aggression:0.5,skill:0.5},
+  load(){try{Object.assign(this.state,JSON.parse(localStorage.getItem('aiden_ai_state')||'{}'))}catch(e){}},
+  save(){localStorage.setItem('aiden_ai_state',JSON.stringify(this.state))},
+  observe(score,success=true){let s=this.state; s.gamesPlayed++; s.recentScore=score; s.skill=Math.max(0,Math.min(1,s.skill+(success?.035:-.045))); s.streak=success?s.streak+1:0; s.aggression=Math.max(.2,Math.min(1,s.skill*.75+s.streak*.018)); this.save()},
+  difficulty(){return .75+this.state.skill*.7},
+  coach(){let s=this.state;if(s.streak>=4)return 'AI COACH: You are on fire — increasing reaction speed.';if(s.skill>.72)return 'AI COACH: Expert detected — smarter patterns enabled.';if(s.skill<.35)return 'AI COACH: Training mode — giving you more reaction time.';return 'AI COACH: Adaptive mode — studying your play style.'},
+  wire(){this.load(); document.addEventListener('click',e=>{let b=e.target.closest('.play');if(!b)return;setTimeout(()=>this.mount(),50)});},
+  mount(){let p=document.querySelector('#player');if(!p)return; p.classList.add('ai-core');let feed=p.querySelector('.ai-feed');if(!feed){feed=document.createElement('div');feed.className='ai-feed';p.querySelector('#content')?.prepend(feed)}feed.innerHTML='<span class="ai-orb"></span><b>'+this.coach().split(':')[0]+'</b>:'+this.coach().split(':').slice(1).join(':')+' <span style="float:right">Difficulty '+Math.round(this.difficulty()*100)+'%</span>'},
+  result(score,success=true){this.observe(score,success);setTimeout(()=>this.mount(),30)}
+};
+AidenAI.wire();
+</script>
+</head>
+<body>
+<header><div class="nav"><div class="logo"><div class="mark">AG</div><div><span>AIDEN</span><small>3D AI ARCADE</small></div></div><nav><a href="#home">HOME</a><a href="#games">GAMES</a><a href="#social">SOCIAL</a><a href="#school">SCHOOL LIFE</a><a href="#scores">SCORES</a></nav></div></header>
+
+<main id="home">
+<section class="hero">
+<div><span class="badge">🤖 ADAPTIVE AI • 🕹️ 3D • ⚡ OFFLINE</span><h1>AIDEN<em>3D AI ARCADE</em></h1><p>Eight arcade games rebuilt with 3D-style worlds and an adaptive AI Coach. The coach watches how you play and adjusts difficulty so games stay fun instead of becoming frustrating.</p><a class="btn" href="#games">ENTER THE ARCADE 🎮</a></div>
+<div class="hero3d"><div class="cube"><div class="front">AG</div><div class="back">🤖</div><div class="right">🚀</div><div class="left">⭐</div><div class="top">🎮</div><div class="bottom">✨</div></div></div>
+</section>
+
+<h2 class="section-title" id="games">🌌 3D GAME WORLD</h2>
+<div class="toolbar"><input class="search" id="search" placeholder="Search games…" aria-label="Search games"></div>
+<section class="games" id="grid">
+<script>
+const gameCards=[
+['rush','🚀⭐','REFLEX','Aiden Rush','Fly through a 3D star field and dodge hazards.'],
+['memory','🧠🃏','PUZZLE','Memory Matrix','Match glowing 3D cards with an adaptive challenge.'],
+['basket','🏀🔥','SPORTS','Hoop Legends 3D','Aim, shoot, and build a hot streak.'],
+['color','🎨⚡','REACTION','Color Rush 3D','Beat the AI clock with fast color decisions.'],
+['boxing','🥊💥','ACTION','Boxing Champ 3D','Fight an adaptive AI rival in a neon arena.'],
+['word','⌨️🚀','SPEED','Word Sprint 3D','Race a virtual AI ghost by typing quickly.'],
+['chef','🍳👨‍🍳','CASUAL','Chef Master 3D','Serve orders while your AI manager raises the pace.'],
+['meteor','🛸☄️','ARCADE','Meteor Defender 3D','Protect your base from an escalating meteor storm.'],
+['football','🏈⚡','SPORTS','Football Rush 3D','Dodge defenders, sprint downfield, and score touchdowns.'],
+['baseball','⚾🔥','SPORTS','Home Run Hero 3D','Time your swing and smash pitches over the neon wall.'],
+['soccer','⚽🥅','SPORTS','Soccer Striker 3D','Aim your shots past the moving AI goalkeeper.'],
+['hockey','🏒🥅','SPORTS','Hockey Showdown 3D','Shoot pucks through the moving goalie and score.'],
+['street','🏎️🏁','RACING','Street Racer 3D','Dodge traffic, grab nitro, and finish the neon highway race.'],
+['drift','🚗💨','RACING','Drift King 3D','Hold your drift through sharp corners to build huge combo points.'],
+['nitro','🏎️⚡','RACING','Nitro Circuit 3D','Blast through laps, collect boost, and beat the AI lap time.'],
+['rally','🚙🏔️','RACING','Rally Rush 3D','Race a twisting mountain course while avoiding rocks and barriers.'],
+['trackfield','🏃‍♂️🏟️','SPORTS','Aiden Track & Field','Compete in realistic 100m, long jump, hurdles, javelin, and shot put events.']
+];
+document.write(gameCards.map(g=>`<article class="card" data-game="${g[0]}" data-search="${g.join(' ').toLowerCase()}"><div class="art">${g[1]}</div><div class="cardbody"><span class="tag">${g[2]} • AI</span><h3>${g[3]}</h3><p>${g[4]}</p><button class="play" data-open="${g[0]}">PLAY IN 3D ▶</button></div></article>`).join(''));
+</script>
+</section><p id="empty" style="display:none;text-align:center;color:var(--muted)">No games match that search.</p>
+
+
+<section id="social" class="social-app">
+  <div class="social-head"><div><div class="social-badge">📱 AIDEN GAMES SOCIAL</div><h2>Connect. Post. Play.</h2><p>A built-in social feed for the Aiden Games arcade.</p></div><div class="social-badge">💾 SAVES ON THIS DEVICE</div></div>
+  <div class="social-layout">
+    <aside class="social-panel"><div class="social-avatar" id="socialAvatar">🎮</div><h3 id="socialProfileName">Aiden Player</h3><p style="color:var(--muted);font-size:13px">Your local Aiden Social profile</p>
+      <input class="social-input" id="socialUsername" maxlength="24" placeholder="Display name">
+      <div class="social-row" style="margin-top:9px"><button class="social-btn" id="socialSave">SAVE PROFILE</button><button class="social-btn secondary" id="socialAvatarBtn">🎲 AVATAR</button></div>
+      <div class="social-stats"><div class="social-stat"><b id="socialPostCount">0</b><span>POSTS</span></div><div class="social-stat"><b id="socialLikeCount">0</b><span>LIKES</span></div></div>
+      <div class="social-notes"><h3>🔔 Notifications</h3><div id="socialNotifications"><div class="social-note">No notifications yet.</div></div></div>
+    </aside>
+    <div>
+      <div class="social-composer"><h3>✍️ Create a post</h3><textarea class="social-textarea" id="socialPostText" maxlength="280" placeholder="Share a score, challenge a friend, or tell the arcade what you played..."></textarea><div class="social-row" style="justify-content:space-between;margin-top:10px"><small style="color:var(--muted)"><span id="socialChars">0</span>/280</small><button class="social-btn" id="socialPostBtn">POST 🚀</button></div></div>
+      <input class="social-input social-search" id="socialFeedSearch" placeholder="🔎 Search the social feed...">
+      <div class="social-feed" id="socialFeed"></div>
+    </div>
+  </div>
+</section>
+
+<section id="player" hidden><div class="playerhead"><h2 id="title"></h2><button class="close" id="close">CLOSE ✕</button></div><div id="content"></div></section>
+
+
+<section id="school" class="school-app">
+  <div class="school-head"><div><div class="social-badge">🏫 AIDEN GAMES SCHOOL LIFE</div><h2>School Life</h2><p>Go to class, complete mini-games, build your grades, and explore your school day.</p></div><div class="social-badge">⭐ GPA: <span id="schoolGPA">A+</span></div></div>
+  <div class="school-grid">
+    <div class="school-card"><div class="icon">📚</div><h3>Classroom</h3><p>Answer quick school questions and earn grade points.</p><button class="school-btn" data-school="class">START CLASS</button></div>
+    <div class="school-card"><div class="icon">🏃</div><h3>PE</h3><p>Train your speed and reflexes with a timed PE challenge.</p><button class="school-btn" data-school="pe">START PE</button></div>
+    <div class="school-card"><div class="icon">🍎</div><h3>Cafeteria</h3><p>Choose your lunch and keep your energy high for the day.</p><button class="school-btn" data-school="lunch">GET LUNCH</button></div>
+    <div class="school-card"><div class="icon">🎒</div><h3>School Schedule</h3><p>Check your classes and plan your school day.</p><button class="school-btn" data-school="schedule">VIEW SCHEDULE</button></div>
+  </div>
+  <div id="schoolPanel" class="school-panel"></div>
+</section>
+
+
+<section id="planetquest" class="school-app" style="margin-top:55px">
+  <div class="school-head"><div><div class="social-badge">🪐 AIDEN GAMES PLANET QUEST</div><h2>Planet Quest</h2><p>Explore 8 planets, earn science, spend coins, and upgrade your ship.</p></div>
+  <div class="social-badge">🪙 <span id="pqCoins">500</span> • 🔬 <span id="pqScience">0</span> • 🚀 <span id="pqFuel">100</span>%</div></div>
+  <div id="pqWrap" style="display:grid;grid-template-columns:1fr 300px;gap:18px;margin-top:18px">
+    <div class="gamebox" id="pqSpace" style="height:520px;background:radial-gradient(circle at 50% 50%,#132b4d,#020817 72%);position:relative">
+      <div id="pqSolar" style="position:absolute;left:50%;top:50%;width:min(72vw,720px);height:min(72vw,720px);transform:translate(-50%,-50%)"></div>
+    </div>
+    <div class="school-card" id="pqPanel"><h3 id="pqName">Earth</h3><div id="pqBig" style="width:115px;height:115px;border-radius:50%;margin:15px auto"></div>
+      <p id="pqDesc">Our home planet and the best place to begin your mission.</p>
+      <div class="school-class"><span>🌱 Habitability</span><b id="pqHabit">100%</b></div>
+      <div class="school-class"><span>💧 Water</span><b id="pqWater">71%</b></div>
+      <div class="school-class"><span>🪨 Resources</span><b id="pqResource">Rich</b></div>
+      <button class="school-btn" id="pqExplore" style="margin-top:12px">🚀 EXPLORE PLANET</button>
+      <button class="school-btn" id="pqMission" style="margin-top:8px">📋 MISSIONS</button>
+      <button class="school-btn" id="pqUpgrade" style="margin-top:8px">⬆️ UPGRADE SHIP</button>
+    </div>
+  </div>
+</section>
+
+<section id="scores"><h2 class="section-title">🏆 AI-TRACKED HIGH SCORES</h2><div id="scoreBoard"></div></section>
+<section style="text-align:center;padding-top:45px"><h2 class="section-title">🤖 YOUR AI COACH</h2><p style="max-width:720px;margin:auto;color:var(--muted);line-height:1.7">The AI Coach is local and lightweight: it uses your recent score and performance to tune speed, enemy behavior, timing, and bonus targets. No account or cloud service is required.</p></section>
+</main>
+<footer><b>AIDEN 3D AI ARCADE</b> • Play. Learn. Replay. Have fun.</footer>
+
+<script>
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const names={rush:'Aiden Rush',memory:'Memory Matrix',basket:'Hoop Legends 3D',color:'Color Rush 3D',boxing:'Boxing Champ 3D',word:'Word Sprint 3D',chef:'Chef Master 3D',meteor:'Meteor Defender 3D',football:'Football Rush 3D',baseball:'Home Run Hero 3D',soccer:'Soccer Striker 3D',hockey:'Hockey Showdown 3D',street:'Street Racer 3D',drift:'Drift King 3D',nitro:'Nitro Circuit 3D',rally:'Rally Rush 3D',trackfield:'Aiden Track & Field'};
+const key='aiden3dai.scores.v1';let scores=load(),cleanup=null;
+function load(){try{return JSON.parse(localStorage.getItem(key))||{}}catch{return {}}}
+function save(type,n){n=Math.floor(Math.max(0,n));if(n>(scores[type]||0)){scores[type]=n;try{localStorage.setItem(key,JSON.stringify(scores))}catch{}}render()}
+function render(){$('#scoreBoard').innerHTML=Object.entries(names).map(([k,v])=>`<div class="score-card">${v}<b>${(scores[k]||0).toLocaleString()}</b></div>`).join('')}render();
+
+$('#search').oninput=e=>{let q=e.target.value.toLowerCase().trim(),n=0;$$('.card').forEach(c=>{let ok=!q||c.dataset.search.includes(q);c.classList.toggle('hidden',!ok);n+=ok});$('#empty').style.display=n?'none':'block'};
+function coach(type,base=1){let s=scores[type]||0;let level=s<300?'Easy':s<900?'Warm':'Challenge';return `<div class="ai">🤖 <b>AI Coach:</b> ${level} mode • I’ll adapt this game as you play. ${s?'Your best is '+s+'.':''}</div>`}
+function finish(type,msg,score){save(type,score);let r=document.createElement('div');r.className='result';r.innerHTML=`<div class="result-box"><h2>${msg}</h2><p>Score: <b>${score.toLocaleString()}</b></p><p>${score>(scores[type]||0)?'🏆 New high score!':'Keep going — your AI coach is learning your style.'}</p><button class="btn" id="again">PLAY AGAIN</button></div>`;$('.gamebox',content).append(r);$('#again').onclick=()=>openGame(type)}
+function close(){if(cleanup)cleanup();cleanup=null;content.replaceChildren();player.hidden=true}$('#close').onclick=close;
+function openGame(type){if(cleanup)cleanup();cleanup=null;content.replaceChildren();player.hidden=false;title.textContent=names[type];({rush,memory,basket,color,boxing,word,chef,meteor,football,baseball,soccer,hockey,street,drift,nitro,rally,trackfield}[type])();player.scrollIntoView({behavior:'smooth',block:'start'})}
+$('#grid').onclick=e=>{let b=e.target.closest('[data-open]');if(b)openGame(b.dataset.open)};
+
+function shell(type,extra){content.innerHTML=coach(type)+extra}
+
+
+
+function trackfield(){
+ shell('trackfield',`<div class="hud"><span>🏟️ Event <b id="tfEvent">100M DASH</b></span><span>🏆 Score <b id="tfScore">0</b></span><span>⏱️ <b id="tfTime">0.00</b></span></div>
+ <div class="gamebox"><canvas id="tfCanvas" style="height:390px;background:#87c9f4"></canvas></div>
+ <div class="controls" id="tfEvents">
+ <button class="control" data-e="dash">🏃 100M</button><button class="control" data-e="hurdles">🚧 HURDLES</button><button class="control" data-e="jump">🦘 LONG JUMP</button><button class="control" data-e="javelin">🎯 JAVELIN</button><button class="control" data-e="shot">💪 SHOT PUT</button></div>
+ <div class="controls"><button class="control" id="tfAction">START / TAP</button><button class="control" id="tfReset">RESET</button></div>
+ <div class="gamehint" id="tfHint">100M: tap or press SPACE rapidly. Hurdles: tap when the athlete reaches a hurdle. Long jump: build speed, then tap at the takeoff board. Javelin/shot put: build power and release.</div>`);
+ const c=$('#tfCanvas'),ctx=c.getContext('2d'),box=c.parentElement;let W,H,dpr,ev='dash',run=false,start=0,score=0,progress=0,power=0,raf=0,last=0,jumpReady=false,hurdleCount=0,release=false;
+ const labels={dash:'100M DASH',hurdles:'110M HURDLES',jump:'LONG JUMP',javelin:'JAVELIN THROW',shot:'SHOT PUT'};
+ function size(){dpr=Math.min(devicePixelRatio||1,2);W=box.clientWidth;H=390;c.width=W*dpr;c.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);draw()} size(); addEventListener('resize',size);
+ function reset(){run=false;score=0;progress=0;power=0;start=0;last=0;jumpReady=false;hurdleCount=0;release=false;$('#tfScore').textContent='0';$('#tfTime').textContent='0.00';$('#tfAction').textContent='START / TAP';$('#tfHint').textContent=ev==='dash'?'100M: tap or press SPACE rapidly.':ev==='hurdles'?'Tap when you reach each hurdle to clear it.':'Build power with taps, then release at the right moment.';draw()}
+ function choose(x){ev=x;$('#tfEvent').textContent=labels[x];reset()}
+ $$('#tfEvents button').forEach(b=>b.onclick=()=>choose(b.dataset.e));
+ $('#tfReset').onclick=reset;
+ function act(){
+  if(!run){run=true;start=performance.now();last=start;$('#tfAction').textContent='TAP / SPACE';$('#tfHint').textContent=ev==='dash'?'Sprint! Tap rapidly!':ev==='hurdles'?'Time your jumps!':'Build power and release!';raf=requestAnimationFrame(frame);return}
+  if(ev==='dash'){progress=Math.min(1,progress+.045);score=Math.round(progress*1000)}
+  else if(ev==='hurdles'){progress=Math.min(1,progress+.075);score=Math.round(progress*1000);hurdleCount=Math.min(7,Math.floor(progress*7))}
+  else {power=Math.min(100,power+9);score=Math.round(power*10)}
+  if(progress>=1 || ((ev==='jump'||ev==='javelin'||ev==='shot')&&power>=100)){finishTF()}
+ }
+ $('#tfAction').onclick=act; const key=e=>{if(e.code==='Space'){e.preventDefault();act()}};addEventListener('keydown',key);
+ function finishTF(){run=false;cancelAnimationFrame(raf);let elapsed=(performance.now()-start)/1000;let final=score;
+  if(ev==='dash') final=Math.max(1,Math.round(1200-elapsed*100));
+  if(ev==='hurdles') final=Math.max(1,Math.round(1100-elapsed*70-hurdleCount*8));
+  if(ev==='jump') final=Math.round(4.5+score/100*2.5); // meters-style result
+  if(ev==='javelin') final=Math.round(25+score/100*35); // meters-style result
+  if(ev==='shot') final=Math.round(8+score/100*8); // meters-style result
+  $('#tfScore').textContent=final;$('#tfTime').textContent=elapsed.toFixed(2);$('#tfAction').textContent='RUN AGAIN';
+  finish('trackfield','🏆 '+labels[ev]+' COMPLETE!',final);draw();
+ }
+ function frame(t){if(!run)return;let dt=Math.min(.04,(t-last)/1000);last=t; if(ev==='dash'||ev==='hurdles'){progress=Math.min(1,progress+dt*.035);score=Math.round(progress*1000)} draw(); if(progress>=1){finishTF();return} $('#tfTime').textContent=((t-start)/1000).toFixed(2);raf=requestAnimationFrame(frame)}
+ function draw(){ctx.clearRect(0,0,W,H);let g=ctx.createLinearGradient(0,0,0,180);g.addColorStop(0,'#49a3e3');g.addColorStop(1,'#d8f0ff');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#414957';ctx.fillRect(0,105,W,55);ctx.fillStyle='#2c313d';for(let y=112;y<160;y+=12){ctx.fillRect(0,y,W,7)}
+  for(let x=8;x<W;x+=18){ctx.fillStyle=(x%3)?'#8fa1bd':'#e5d8c8';ctx.fillRect(x,115,7,8)}
+  ctx.fillStyle='#4e984d';ctx.fillRect(0,160,W,230);ctx.fillStyle='#a94148';ctx.fillRect(0,205,W,185);
+  ctx.strokeStyle='#fff';ctx.lineWidth=3;for(let i=0;i<=8;i++){ctx.beginPath();ctx.moveTo(i*W/8,210);ctx.lineTo(i*W/8-55,390);ctx.stroke()}
+  ctx.beginPath();ctx.moveTo(0,240);ctx.lineTo(W,240);ctx.stroke();ctx.beginPath();ctx.moveTo(W*.86,205);ctx.lineTo(W*.81,390);ctx.stroke();
+  if(ev==='hurdles'){for(let i=0;i<7;i++){let x=W*.15+i*W*.105;ctx.strokeStyle='#eee';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x,265);ctx.lineTo(x,315);ctx.moveTo(x+30,265);ctx.lineTo(x+30,315);ctx.stroke();ctx.fillStyle='#fff';ctx.fillRect(x,260,30,6)}}
+  if(ev==='jump'){ctx.fillStyle='#d5b984';ctx.fillRect(W*.68,245,W*.27,145);ctx.fillStyle='#eee0c0';ctx.fillRect(W*.67,237,W*.29,8)}
+  if(ev==='javelin'||ev==='shot'){ctx.fillStyle='#c6ad76';ctx.beginPath();ctx.arc(W*.82,315,75,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.stroke()}
+  let x=55+progress*(W*.77), y=285-(ev==='jump'&&power>60?Math.sin((power/100)*Math.PI)*55:0);ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(x,y+44,25,7,0,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#7b4a2c';ctx.beginPath();ctx.arc(x,y-50,12,0,Math.PI*2);ctx.fill();ctx.fillStyle='#191919';ctx.beginPath();ctx.arc(x,y-55,12,Math.PI,Math.PI*2);ctx.fill();ctx.fillStyle='#35176a';ctx.beginPath();ctx.roundRect(x-13,y-37,26,43,6);ctx.fill();ctx.fillStyle='#b875ff';ctx.fillRect(x-8,y-28,16,4);
+  let sw=Math.sin(performance.now()/90)*17;ctx.strokeStyle='#7b4a2c';ctx.lineWidth=8;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x-8,y-28);ctx.lineTo(x-27,y-5+sw);ctx.stroke();ctx.beginPath();ctx.moveTo(x+8,y-28);ctx.lineTo(x+27,y-5-sw);ctx.stroke();ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(x-7,y+6);ctx.lineTo(x-22,y+42-sw);ctx.stroke();ctx.beginPath();ctx.moveTo(x+7,y+6);ctx.lineTo(x+23,y+42+sw);ctx.stroke();
+  ctx.strokeStyle='#fff';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x-28,y+43-sw);ctx.lineTo(x-8,y+43-sw);ctx.stroke();ctx.beginPath();ctx.moveTo(x+18,y+43+sw);ctx.lineTo(x+38,y+43+sw);ctx.stroke();
+  ctx.fillStyle='rgba(0,0,0,.62)';ctx.fillRect(20,20,245,38);ctx.fillStyle='#fff';ctx.font='bold 21px Arial';ctx.fillText(labels[ev],35,46);
+ }
+ draw(); cleanup=()=>{run=false;cancelAnimationFrame(raf);removeEventListener('resize',size);removeEventListener('keydown',key)};
+}
+
+function rush(){
+ shell('rush',`<div class="hud"><span>⭐ Score <b id="s">0</b></span><span>❤️ Lives <b id="l">3</b></span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="controls"><button class="control" id="left">◀ LEFT</button><button class="control" id="right">RIGHT ▶</button></div><div class="gamehint">Move with buttons, A/D, arrows, mouse, or touch. Catch stars and avoid red meteors.</div>`);
+ const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,ship=.5,score=0,lives=3,objs=[],last=performance.now(),spawn=0,raf,run=true,keys=new Set();
+ function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();addEventListener('resize',size);
+ const move=e=>ship=Math.max(.06,Math.min(.94,(e.clientX-c.getBoundingClientRect().left)/w));c.addEventListener('pointermove',move);
+ const kd=e=>keys.add(e.key.toLowerCase()),ku=e=>keys.delete(e.key.toLowerCase());addEventListener('keydown',kd);addEventListener('keyup',ku);
+ $('#left').onpointerdown=()=>ship-=.05;$('#right').onpointerdown=()=>ship+=.05;
+ function add(){objs.push({x:.05+Math.random()*.9,y:-30,v:150+Math.random()*100,star:Math.random()<.72})}
+ function draw(){ctx.clearRect(0,0,w,h);let g=ctx.createRadialGradient(w*.5,h*.2,10,w*.5,h*.5,h);g.addColorStop(0,'#263c7c');g.addColorStop(1,'#03050d');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);for(let i=0;i<45;i++){ctx.fillStyle='#ffffff44';ctx.fillRect((i*83)%w,(i*137+performance.now()*.03)%h,1,1)}ctx.font='46px system-ui';ctx.textAlign='center';ctx.fillText('🚀',ship*w,h-30);objs.forEach(o=>{ctx.font='34px system-ui';ctx.fillText(o.star?'⭐':'☄️',o.x*w,o.y)})}
+ function frame(t){if(!run)return;let dt=Math.min(.035,(t-last)/1000);last=t;if(keys.has('arrowleft')||keys.has('a'))ship-=dt;if(keys.has('arrowright')||keys.has('d'))ship+=dt;ship=Math.max(.06,Math.min(.94,ship));spawn+=dt;if(spawn>.48){add();spawn=0}
+ objs.forEach(o=>o.y+=o.v*dt);for(let i=objs.length-1;i>=0;i--){let o=objs[i];if(o.y>h-90&&Math.abs(o.x-ship)<.09){if(o.star){score+=10;$('#s').textContent=score}else{lives--;$('#l').textContent=lives;if(!lives){run=false;finish('rush','3D Rush Over!',score)}}objs.splice(i,1)}else if(o.y>h+30)objs.splice(i,1)}draw();raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);
+ cleanup=()=>{run=false;cancelAnimationFrame(raf);removeEventListener('resize',size);removeEventListener('keydown',kd);removeEventListener('keyup',ku);c.removeEventListener('pointermove',move)}
+}
+
+function memory(){
+ shell('memory',`<div class="hud"><span>🧠 Score <b id="s">1000</b></span><span>🔄 Moves <b id="m">0</b></span></div><div class="gamebox" style="padding:35px"><div id="cards" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:570px;margin:auto"></div></div><div class="gamehint">Flip the holographic cards and find all pairs. The AI changes the layout every round.</div>`);
+ const icons=['🚀','🐸','🎸','🦄','⚽','🍩','🌈','🤖'],deck=[...icons,...icons].sort(()=>Math.random()-.5),wrap=$('#cards');let open=[],matches=0,moves=0,score=1000,lock=false;
+ deck.forEach((x,i)=>{let b=document.createElement('button');b.textContent='?';b.dataset.v=x;b.style.cssText='aspect-ratio:1;border-radius:14px;border:1px solid #45619a;background:linear-gradient(145deg,#17285a,#0b102c);color:white;font-size:32px;cursor:pointer';b.onclick=()=>{if(lock||open.includes(b)||b.dataset.done)return;b.textContent=x;open.push(b);if(open.length<2)return;lock=true;moves++;$('#m').textContent=moves;if(open[0].dataset.v===open[1].dataset.v){open.forEach(q=>q.dataset.done=1);matches++;score+=Math.max(20,100-moves*2);open=[];lock=false;$('#s').textContent=score;if(matches===8)finish('memory','Memory Matrix Master!',score)}else setTimeout(()=>{open.forEach(q=>q.textContent='?');open=[];lock=false;score=Math.max(0,score-25);$('#s').textContent=score},500)};wrap.append(b)});
+ cleanup=()=>{lock=true}
+}
+
+function basket(){
+ shell('basket',`<div class="hud"><span>🏀 Score <b id="s">0</b></span><span>🎯 Shots <b id="n">10</b></span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="gamehint">Click/tap the ball. Aim toward the moving hoop — the AI gradually changes its position.</div>`);
+ const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,score=0,shots=10,hoop=.65,dir=1,run=true,raf;
+ function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();
+ function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#071025';ctx.fillRect(0,0,w,h);for(let i=0;i<14;i++){ctx.strokeStyle='#ffffff12';ctx.beginPath();ctx.moveTo(0,h-i*35);ctx.lineTo(w,h-i*35);ctx.stroke()}ctx.font='82px system-ui';ctx.textAlign='center';ctx.fillText('⭕',hoop*w,.34*h);ctx.font='50px system-ui';ctx.fillText('🏀',w/2,h-55)}
+ function frame(){if(!run)return;hoop+=dir*.0008; if(hoop>.82||hoop<.38)dir*=-1;draw();raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);
+ const shoot=()=>{if(!run)return;shots--;$('#n').textContent=shots;let aim=Math.abs(.5-hoop)<.22,win=Math.random()<(.55+(aim?.32:0));if(win){score+=100;$('#s').textContent=score}if(!shots){run=false;cancelAnimationFrame(raf);finish('basket','Hoop Legends Victory!',score)}};c.addEventListener('pointerdown',shoot);cleanup=()=>{run=false;cancelAnimationFrame(raf);c.removeEventListener('pointerdown',shoot)}
+}
+
+function color(){
+ shell('color',`<div class="hud"><span>⚡ Score <b id="s">0</b></span><span>🔥 Streak <b id="st">0</b></span><span>⏱️ <b id="t">20</b></span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="gamehint">Select the glowing color — not the word. The AI speeds up as your streak grows.</div>`);
+ const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,score=0,st=0,time=20,run=true,target=0,options=[],raf,timer;
+ function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();addEventListener('resize',size);
+ const cols=[['RED','#ff536e'],['BLUE','#4b8cff'],['GREEN','#91ff5b'],['YELLOW','#ffd83d'],['PINK','#ff4ddd'],['CYAN','#3cecff']];
+ function next(){target=Math.floor(Math.random()*6);options=[...cols.map((_,i)=>i)].sort(()=>Math.random()-.5)}
+ c.onclick=e=>{let r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;let size=72,gap=18,start=(w-4*size-3*gap)/2;for(let i=0;i<4;i++){let xx=start+i*(size+gap),yy=h*.64;if(x>xx&&x<xx+size&&y>yy&&y<yy+size){let picked=options[i];if(picked===target){st++;score+=10+st*3}else st=0;$('#s').textContent=score;$('#st').textContent=st;next();break}}};
+ function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#071026';ctx.fillRect(0,0,w,h);ctx.textAlign='center';ctx.fillStyle=cols[target][1];ctx.font='bold 42px system-ui';ctx.fillText(cols[Math.floor(Math.random()*6)][0],w/2,h*.35);let size=72,gap=18,start=(w-4*size-3*gap)/2;options.forEach((idx,i)=>{ctx.fillStyle=cols[idx][1];ctx.beginPath();ctx.roundRect(start+i*(size+gap),h*.64,size,size,14);ctx.fill()})}
+ function loop(){if(!run)return;draw();raf=requestAnimationFrame(loop)}next();raf=requestAnimationFrame(loop);timer=setInterval(()=>{time--;$('#t').textContent=time;if(time<=0){run=false;clearInterval(timer);cancelAnimationFrame(raf);finish('color','Color Rush Complete!',score)}},1000);cleanup=()=>{run=false;clearInterval(timer);cancelAnimationFrame(raf);removeEventListener('resize',size)}
+}
+
+function drawRealisticCharacter(ctx,x,ground,scale,opts={}){
+ const skin=opts.skin||'#b87955',hair=opts.hair||'#24170f',shirt=opts.shirt||'#1c7cff',shorts=opts.shorts||'#111827',glove=opts.glove||'#e33b48',facing=opts.facing||1,pose=opts.pose||0,enemy=!!opts.enemy;
+ ctx.save(); ctx.translate(x,ground); ctx.scale(facing*scale,scale);
+ // soft contact shadow
+ ctx.save();ctx.scale(1,.22);ctx.fillStyle='rgba(0,0,0,.48)';ctx.beginPath();ctx.ellipse(0,8,72,18,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ // legs + shoes
+ ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#090b12';ctx.lineWidth=18;
+ ctx.beginPath();ctx.moveTo(-18,-88);ctx.lineTo(-29,-18);ctx.moveTo(18,-88);ctx.lineTo(29,-18);ctx.stroke();
+ ctx.fillStyle='#161a24';ctx.beginPath();ctx.roundRect(-48,-17,42,15,7);ctx.roundRect(6,-17,42,15,7);ctx.fill();
+ // torso silhouette
+ let grad=ctx.createLinearGradient(-42,-220,42,-85);grad.addColorStop(0,shirt);grad.addColorStop(.55,shirt);grad.addColorStop(1,'#080b13');ctx.fillStyle=grad;
+ ctx.beginPath();ctx.moveTo(-42,-190);ctx.quadraticCurveTo(-36,-222,0,-228);ctx.quadraticCurveTo(36,-222,42,-190);ctx.lineTo(31,-90);ctx.quadraticCurveTo(0,-72,-31,-90);ctx.closePath();ctx.fill();
+ // neck
+ ctx.fillStyle=skin;ctx.fillRect(-12,-220,24,25);
+ // head with highlight
+ let sg=ctx.createRadialGradient(-10,-258,5,0,-255,48);sg.addColorStop(0,'#e7ae82');sg.addColorStop(.62,skin);sg.addColorStop(1,'#5c3528');ctx.fillStyle=sg;
+ ctx.beginPath();ctx.ellipse(0,-262,34,43,0,0,Math.PI*2);ctx.fill();
+ // ears
+ ctx.fillStyle=skin;ctx.beginPath();ctx.ellipse(-34,-260,7,11,0,0,Math.PI*2);ctx.ellipse(34,-260,7,11,0,0,Math.PI*2);ctx.fill();
+ // hair
+ ctx.fillStyle=hair;ctx.beginPath();ctx.arc(0,-282,35,Math.PI,Math.PI*2);ctx.quadraticCurveTo(22,-299,31,-274);ctx.lineTo(20,-290);ctx.quadraticCurveTo(0,-302,-20,-289);ctx.lineTo(-30,-273);ctx.closePath();ctx.fill();
+ // face: brows, eyes, nose, mouth
+ ctx.strokeStyle='#3b211a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-20,-267);ctx.lineTo(-7,-270);ctx.moveTo(7,-270);ctx.lineTo(20,-267);ctx.stroke();
+ ctx.fillStyle='#151515';ctx.beginPath();ctx.arc(-13,-262,3,0,Math.PI*2);ctx.arc(13,-262,3,0,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='#8a4c38';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-258);ctx.lineTo(-3,-246);ctx.lineTo(4,-245);ctx.stroke();
+ ctx.beginPath();ctx.moveTo(-10,-235);ctx.quadraticCurveTo(0,-230,10,-235);ctx.stroke();
+ // arms / gloves, animated pose
+ ctx.strokeStyle=skin;ctx.lineWidth=22;
+ ctx.beginPath();ctx.moveTo(-34,-180);ctx.lineTo(-62,-135);ctx.lineTo(-78+pose*18,-151-pose*22);ctx.moveTo(34,-180);ctx.lineTo(62,-135);ctx.lineTo(78-pose*25,-160-pose*10);ctx.stroke();
+ ctx.fillStyle=glove;ctx.beginPath();ctx.arc(-78+pose*18,-151-pose*22,17,0,Math.PI*2);ctx.arc(78-pose*25,-160-pose*10,17,0,Math.PI*2);ctx.fill();
+ // chest highlight and shirt seams
+ ctx.globalAlpha=.22;ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(-13,-177,10,34,-.25,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+ ctx.strokeStyle='rgba(255,255,255,.18)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-211);ctx.lineTo(0,-101);ctx.stroke();
+ // nameplate
+ ctx.scale(facing,1);ctx.fillStyle='rgba(0,0,0,.55)';ctx.beginPath();ctx.roundRect(-66,-340,132,24,8);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillText(opts.name|| (enemy?'AI FIGHTER':'PLAYER'),0,-323);
+ ctx.restore();
+}
+
+function boxing(){
+ shell('boxing',`<div class="hud"><span>🥊 HP <b id="hp">100</b></span><span>🤖 Boss HP <b id="eh">100</b></span><span>🔥 Combo <b id="combo">0</b></span><span>⚡ Energy <b id="energy">100</b></span><span>🏆 Score <b id="s">0</b></span><span>👑 Boss <b id="boss">1</b>/5</span></div>
+ <div class="gamebox"><canvas id="c"></canvas><div id="fightMsg" style="position:absolute;left:50%;top:13%;transform:translateX(-50%);font-size:30px;font-weight:1000;text-shadow:0 3px 15px #000;pointer-events:none;text-align:center;transition:.15s"></div></div>
+ <div class="controls"><button class="control" id="jab">JAB 👊</button><button class="control" id="hook">HOOK 🥊</button><button class="control" id="upper">UPPERCUT 💥</button><button class="control" id="heavy">HEAVY ⚡</button><button class="control" id="special">SPECIAL 🌟</button><button class="control" id="d">DODGE 🌀</button><button class="control" id="block">BLOCK 🛡️</button></div>
+ <div class="gamehint">Fight through 5 unique bosses. Each boss has a different style, special attack, rage phase, and weakness. Build combos, dodge telegraphed attacks, and use SPECIAL when your energy is full.</div>`);
+ const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,hp=100,eh=100,score=0,combo=0,energy=100,boss=1,run=true,raf,last=performance.now(),enemyTimer=0,stun=0,blocking=false,dodging=false,playerAnim=0,enemyAnim=0,shake=0,flash=0,particles=[],telegraph=0;
+ const bosses=[
+  {name:'ROOKIE REX',emoji:'🦖',color:'#4cff91',hp:100,rate:1.25* AidenAI.difficulty(),dmg:9,weak:'heavy'},
+  {name:'NEON NINJA',emoji:'🥷',color:'#48e7ff',hp:125,rate:1.0* AidenAI.difficulty(),dmg:12,weak:'upper'},
+  {name:'IRON TITAN',emoji:'🤖',color:'#ff9d3d',hp:155,rate:1.0* AidenAI.difficulty(),dmg:15,weak:'hook'},
+  {name:'SHADOW KING',emoji:'👑',color:'#d77bff',hp:180,rate:.82,dmg:18,weak:'jab'},
+  {name:'CHAMPION ZERO',emoji:'👾',color:'#ff4ddd',hp:220,rate:.65,dmg:22,weak:'special'}
+ ];
+ let B=bosses[0];
+ function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();addEventListener('resize',size);
+ function burst(x,y,n=14){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*300,vy:(Math.random()-.5)*280,life:.45+Math.random()*.5,t:0})}
+ function msg(t){let el=$('#fightMsg');el.textContent=t;el.style.opacity=1;setTimeout(()=>el.style.opacity=.35,380)}
+ function hud(){hp=Math.max(0,hp);eh=Math.max(0,eh);energy=Math.max(0,Math.min(100,energy));$('#hp').textContent=Math.round(hp);$('#eh').textContent=Math.round(eh);$('#combo').textContent=Math.floor(combo);$('#energy').textContent=Math.round(energy);$('#s').textContent=score;$('#boss').textContent=boss}
+ function loadBoss(){B=bosses[boss-1];eh=B.hp;hp=Math.min(100,hp+35);energy=100;combo=0;msg('⚠️ BOSS: '+B.name);hud()}
+ function attack(kind){if(!run||stun>0)return;let cost={jab:0,hook:7,upper:13,heavy:25,special:100}[kind]||0;if(energy<cost){msg('NOT ENOUGH ENERGY ⚡');return}energy-=cost;let base={jab:7,hook:11,upper:16,heavy:25,special:42}[kind];let accuracy={jab:.88,hook:.80,upper:.73,heavy:.64,special:.92}[kind];if(B.weak===kind)accuracy+=.16;let hit=Math.random()<Math.min(.98,accuracy);playerAnim=.25;shake=7;flash=.12;if(hit){let mult=1+Math.min(10,combo)*.075;let dmg=Math.round(base*mult);if(B.weak===kind)dmg=Math.round(dmg*1.45);eh-=dmg;combo+=kind==='upper'?2:kind==='heavy'?3:kind==='special'?4:1;score+=dmg*10+Math.floor(combo)*5;burst(w*.72,h*.57,kind==='special'?32:15);msg(kind==='special'?'🌟 BOSS BREAKER!':B.weak===kind?'🎯 WEAKNESS HIT!':'💥 '+kind.toUpperCase()+'!');if(kind==='heavy'||kind==='special'||combo>=8)stun=.65;if(eh<=0){score+=500*boss;if(boss===5){run=false;finish('boxing','👑 FINAL BOSS DEFEATED!',score+2000);return}boss++;loadBoss();return}}else{combo=0;msg('MISS!');}hud()}
+ function dodge(){if(!run)return;dodging=true;energy=Math.min(100,energy+12);msg('PERFECT DODGE! ✨');setTimeout(()=>dodging=false,430)}
+ function block(){if(!run)return;blocking=true;msg('BLOCK! 🛡️');setTimeout(()=>blocking=false,550)}
+ $('#jab').onclick=()=>attack('jab');$('#hook').onclick=()=>attack('hook');$('#upper').onclick=()=>attack('upper');$('#heavy').onclick=()=>attack('heavy');$('#special').onclick=()=>attack('special');$('#d').onclick=dodge;$('#block').onclick=block;
+ const kd=e=>{let k=e.key.toLowerCase();if(k==='j')attack('jab');if(k==='h')attack('hook');if(k==='u')attack('upper');if(k==='e')attack('heavy');if(k==='s')attack('special');if(k==='d')dodge();if(k==='b')block()};addEventListener('keydown',kd);
+ function enemyAttack(){if(!run||stun>0)return;telegraph=.42;setTimeout(()=>{if(!run||stun>0)return;let rage=eh<B.hp*.35?1.45:1,dmg=Math.round(B.dmg*rage);if(dodging){msg('💨 BOSS MISSED!');score+=70;return}if(blocking){dmg=Math.ceil(dmg*.25);energy=Math.min(100,energy+10);msg('🛡️ BLOCKED!')}else{hp-=dmg;combo=0;shake=12;burst(w*.28,h*.57,9);msg(B.name+' ATTACKS! 💥')}hud();if(hp<=0){run=false;finish('boxing','💀 BOSS WINS',0)}},420)}
+ function draw(){ctx.clearRect(0,0,w,h);let g=ctx.createLinearGradient(0,0,0,h);g.addColorStop(0,'#090b24');g.addColorStop(.5,'#27103c');g.addColorStop(1,'#05070f');ctx.fillStyle=g;ctx.fillRect(0,0,w,h);ctx.strokeStyle=B.color+'55';ctx.lineWidth=3;for(let y=.2;y<.72;y+=.13){ctx.beginPath();ctx.moveTo(0,h*y);ctx.lineTo(w,h*y);ctx.stroke()}ctx.fillStyle='#050711';ctx.fillRect(0,h*.78,w,h*.22);ctx.textAlign='center';const px=w*.28+(Math.random()-.5)*shake, ex=w*.72+(Math.random()-.5)*shake;
+ ctx.save();ctx.globalAlpha=.28;ctx.fillStyle='#000';ctx.beginPath();ctx.ellipse(px,h*.79,92,18,0,0,Math.PI*2);ctx.ellipse(ex,h*.79,92,18,0,0,Math.PI*2);ctx.fill();ctx.restore();
+ drawRealisticCharacter(ctx,px,h*.78-playerAnim*35,0.78,{name:'AIDEN',skin:'#b97957',hair:'#21140e',shirt:'#1776ff',shorts:'#101827',glove:'#e53e4d',pose:playerAnim*1.5});
+ const styles=[['#d14b3f','#21140e'],['#243b8f','#151515'],['#6b7280','#252525'],['#5b2b82','#090909'],['#b91c1c','#050505']]; const st=styles[(boss-1)%styles.length];
+ drawRealisticCharacter(ctx,ex,h*.78-enemyAnim*35,0.82,{name:B.name,skin:boss%2?'#8b5a3c':'#d19a72',hair:st[1],shirt:st[0],shorts:'#171717',glove:st[0],facing:-1,pose:enemyAnim*1.4,enemy:true});
+ ctx.font='16px system-ui';ctx.fillStyle=B.color;ctx.fillText('AI '+B.name+' • '+(eh<B.hp*.35?'RAGE PHASE 🔥':'NORMAL PHASE'),w/2,28);ctx.font='16px system-ui';ctx.fillStyle=B.color;ctx.fillText(B.name+' • '+(eh<B.hp*.35?'RAGE PHASE 🔥':'NORMAL PHASE'),w/2,28);ctx.fillStyle='#11182e';ctx.fillRect(w*.10,48,w*.34,11);ctx.fillStyle='#3cecff';ctx.fillRect(w*.10,48,w*.34*(energy/100),11);ctx.fillStyle='#11182e';ctx.fillRect(w*.56,48,w*.34,11);ctx.fillStyle=B.color;ctx.fillRect(w*.56,48,w*.34*(eh/B.hp),11);if(telegraph>0){ctx.font='34px system-ui';ctx.fillText('⚠️ INCOMING!',w*.72,h*.42)}if(blocking){ctx.font='48px system-ui';ctx.fillText('🛡️',w*.28,h*.43)}if(dodging){ctx.font='46px system-ui';ctx.fillText('💨',w*.20,h*.72)}particles.forEach(p=>{ctx.globalAlpha=Math.max(0,1-p.t/p.life);ctx.font='22px system-ui';ctx.fillText('✦',p.x,p.y)});ctx.globalAlpha=1}
+ function frame(t){if(!run)return;let dt=Math.min(.04,(t-last)/1000);last=t;energy+=18*dt;combo=Math.max(0,combo-dt*.22);playerAnim=Math.max(0,playerAnim-dt);enemyAnim=Math.max(0,enemyAnim-dt);stun=Math.max(0,stun-dt);telegraph=Math.max(0,telegraph-dt);shake=Math.max(0,shake-dt*28);flash=Math.max(0,flash-dt);enemyTimer+=dt;let gap=Math.max(.45,B.rate-(score/5000));if(enemyTimer>gap){enemyTimer=0;enemyAnim=.28;enemyAttack()}particles.forEach(p=>{p.t+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=200*dt});particles=particles.filter(p=>p.t<p.life);hud();draw();raf=requestAnimationFrame(frame)}loadBoss();raf=requestAnimationFrame(frame);cleanup=()=>{run=false;cancelAnimationFrame(raf);removeEventListener('resize',size);removeEventListener('keydown',kd)}
+}
+
+function word(){
+ shell('word',`<div class="hud"><span>⌨️ Score <b id="s">0</b></span><span>🔥 Streak <b id="st">0</b></span><span>⏱️ <b id="t">30</b></span></div><div class="gamebox"><div style="position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:25px"><div style="width:min(620px,100%)"><div>TYPE THE HOLOGRAM</div><div id="target" style="font-size:46px;font-weight:1000;letter-spacing:5px;margin:15px"></div><input id="input" style="width:100%;padding:14px;border-radius:11px;border:1px solid #4a6095;background:#070e25;color:#fff;text-align:center;font-size:20px" autocomplete="off" spellcheck="false"><div id="ghost" style="margin-top:14px;color:#7892d1">AI ghost: waiting…</div></div></div></div><div class="gamehint">Type the word and press Enter. Your AI ghost gets closer as your speed improves.</div>`);
+ const words=['PIXEL','ROCKET','GALAXY','TURBO','BUBBLE','COMET','RAINBOW','PLAYER','CHAMP','SPARK','MONSTER','POWER'],target=$('#target'),input=$('#input'),ghost=$('#ghost');let score=0,st=0,time=30,run=true,timer;
+ function next(){target.textContent=words[Math.floor(Math.random()*words.length)];input.value='';input.focus()}
+ input.onkeydown=e=>{if(e.key!=='Enter'||!run)return;if(input.value.trim().toUpperCase()===target.textContent){st++;score+=10+st*3}else st=0;$('#s').textContent=score;$('#st').textContent=st;ghost.textContent='AI ghost: '+(st>5?'🔥 right behind you!':'warming up…');next()};
+ next();timer=setInterval(()=>{time--;$('#t').textContent=time;if(time<=0){run=false;clearInterval(timer);finish('word','Word Sprint Finished!',score)}},1000);cleanup=()=>{run=false;clearInterval(timer);input.onkeydown=null}
+}
+
+function chef(){
+ shell('chef',`<div class="hud"><span>👨‍🍳 Score <b id="s">0</b></span><span>🔥 Orders <b id="o">0</b></span><span>⏱️ <b id="t">25</b></span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="controls" id="choices"></div><div class="gamehint">Serve the requested dish. The AI manager gradually adds speed pressure.</div>`);
+ const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement,foods=['🍔','🍕','🌮','🍜','🍣','🥗','🍩','🥪'];let w,h,dpr,target,score=0,orders=0,time=25,run=true,timer,raf;
+ function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();
+ function next(){target=foods[Math.floor(Math.random()*foods.length)];$('#choices').innerHTML=foods.map(f=>`<button class="control" data-food="${f}" style="font-size:28px">${f}</button>`).join('')}
+ $('#choices').onclick=e=>{let b=e.target.closest('[data-food]');if(!b||!run)return;if(b.dataset.food===target){score+=100;orders++}else score=Math.max(0,score-25);$('#s').textContent=score;$('#o').textContent=orders;next()};
+ function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#071b16';ctx.fillRect(0,0,w,h);ctx.textAlign='center';ctx.font='90px system-ui';ctx.fillText('🍳',w/2,h*.65);ctx.font='22px system-ui';ctx.fillText('ORDER',w/2,55);ctx.font='60px system-ui';ctx.fillText(target,w/2,130)}function loop(){if(!run)return;draw();raf=requestAnimationFrame(loop)}next();raf=requestAnimationFrame(loop);timer=setInterval(()=>{time--;$('#t').textContent=time;if(time<=0){run=false;clearInterval(timer);cancelAnimationFrame(raf);finish('chef','Chef Master 3D!',score)}},1000);cleanup=()=>{run=false;clearInterval(timer);cancelAnimationFrame(raf)}
+}
+
+function meteor(){
+ shell('meteor',`<div class="hud"><span>🛸 Score <b id="s">0</b></span><span>🛡️ Base <b id="b">5</b></span><span>🔥 Wave <b id="w">1</b></span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="gamehint">Click/tap meteors before they hit the base. The AI increases spawn speed with your score.</div>`);
+ const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,score=0,base=5,wave=1,items=[],last=performance.now(),spawn=0,raf,run=true;
+ function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();addEventListener('resize',size);
+ c.onclick=e=>{let r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;for(let i=items.length-1;i>=0;i--){let o=items[i];if(Math.hypot(o.x*w-x,o.y-y)<35){score+=25;$('#s').textContent=score;items.splice(i,1);break}}};
+ function add(){items.push({x:.05+Math.random()*.9,y:-.04,v:.10+score/9000+Math.random()*.06})}
+ function frame(t){if(!run)return;let dt=Math.min(.04,(t-last)/1000);last=t;spawn+=dt;if(spawn>.62-Math.min(.38,score/3000)){add();spawn=0}ctx.clearRect(0,0,w,h);ctx.fillStyle='#030611';ctx.fillRect(0,0,w,h);ctx.fillStyle='#38e8ff';ctx.fillRect(0,h-38,w,38);ctx.font='46px system-ui';ctx.textAlign='center';ctx.fillText('🛸',w/2,h-48);ctx.font='32px system-ui';items.forEach(o=>{o.y+=o.v*dt;ctx.fillText('☄️',o.x*w,o.y*h);if(o.y>0.91){base--;$('#b').textContent=base;items.splice(items.indexOf(o),1);wave=Math.floor(score/250)+1;$('#w').textContent=wave;if(base<=0){run=false;finish('meteor','Meteor Defender Survived!',score)}}});raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);cleanup=()=>{run=false;cancelAnimationFrame(raf);removeEventListener('resize',size)}
+}
+
+function football(){
+  shell('football',`<div class="hud"><span>🏈 Score <b id="s">0</b></span><span>❤️ Lives <b id="l">3</b></span><span>🏆 TD <b id="td">0</b></span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="controls"><button class="control" id="left">◀ LEFT</button><button class="control" id="right">RIGHT ▶</button><button class="control" id="boost">TURBO ⚡</button></div><div class="gamehint">Run downfield, dodge defenders, and cross the goal line. Use A/D or arrow keys.</div>`);
+  const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,x=.5,score=0,lives=3,td=0,boost=1,items=[],last=performance.now(),spawn=0,raf,run=true,keys=new Set();
+  function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();
+  const kd=e=>keys.add(e.key.toLowerCase()),ku=e=>keys.delete(e.key.toLowerCase());addEventListener('keydown',kd);addEventListener('keyup',ku);
+  $('#left').onclick=()=>x-=.07;$('#right').onclick=()=>x+=.07;$('#boost').onclick=()=>boost=Math.min(2,boost+.35);
+  function add(){items.push({x:.08+Math.random()*.84,y:-.05,v:.22+Math.random()*.13})}
+  function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#063d20';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#ffffff55';ctx.lineWidth=2;for(let y=0;y<h;y+=55){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}ctx.font='44px system-ui';ctx.textAlign='center';ctx.fillText('🏈',x*w,h-55);items.forEach(o=>ctx.fillText('🛡️',o.x*w,o.y*h))}
+  function frame(t){if(!run)return;let dt=Math.min(.04,(t-last)/1000);last=t;if(keys.has('arrowleft')||keys.has('a'))x-=dt*.75*boost;if(keys.has('arrowright')||keys.has('d'))x+=dt*.75*boost;x=Math.max(.07,Math.min(.93,x));spawn+=dt;if(spawn>.55){add();spawn=0}items.forEach(o=>o.y+=o.v*dt);for(let i=items.length-1;i>=0;i--){let o=items[i];if(o.y>.83&&Math.abs(o.x-x)<.11){lives--;$('#l').textContent=lives;items.splice(i,1);if(!lives){run=false;finish('football','Football Rush Over!',score)}}else if(o.y>.98){score+=100;td++;$('#s').textContent=score;$('#td').textContent=td;items.splice(i,1)}}draw();raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);
+  cleanup=()=>{run=false;cancelAnimationFrame(raf);removeEventListener('keydown',kd);removeEventListener('keyup',ku)}
+}
+
+function baseball(){
+  shell('baseball',`<div class="hud"><span>⚾ Score <b id="s">0</b></span><span>🔥 Hits <b id="h">0</b></span><span>🎯 Strikes <b id="st">0</b>/3</span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="controls"><button class="control" id="swing">SWING ⚾</button></div><div class="gamehint">Watch the pitch and swing when the ball reaches the target zone. Perfect timing earns a home run.</div>`);
+  const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,score=0,hits=0,strikes=0,x=0,last=performance.now(),raf,run=true,pitch=0;
+  function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();
+  function swing(){if(!run)return;let perfect=Math.abs(pitch-.82)<.09;if(perfect){score+=300;hits++;$('#s').textContent=score;$('#h').textContent=hits}else{strikes++;$('#st').textContent=strikes;if(strikes>=3){run=false;cancelAnimationFrame(raf);finish('baseball','Strike Out!',score)}}pitch=0}
+  $('#swing').onclick=swing;addEventListener('keydown',e=>{if(e.key===' ')swing()});
+  function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#11294c';ctx.fillRect(0,0,w,h);ctx.fillStyle='#9b6a3b';ctx.fillRect(0,h*.72,w,h*.28);ctx.font='76px system-ui';ctx.textAlign='center';ctx.fillText('⚾',w*(.12+pitch*.7),h*.48);ctx.font='70px system-ui';ctx.fillText('🧢',w*.82,h*.54);ctx.strokeStyle='#ffd83d';ctx.lineWidth=4;ctx.strokeRect(w*.73,h*.38,70,70)}
+  function frame(t){if(!run)return;let dt=Math.min(.04,(t-last)/1000);last=t;pitch+=dt*(.48+AidenAI.difficulty()*.08);if(pitch>1.08)pitch=0;draw();raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);
+  cleanup=()=>{run=false;cancelAnimationFrame(raf)}
+}
+
+function soccer(){
+  shell('soccer',`<div class="hud"><span>⚽ Score <b id="s">0</b></span><span>🥅 Goals <b id="g">0</b></span><span>🎯 Shots <b id="n">8</b></span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="controls"><button class="control" id="left">◀ AIM LEFT</button><button class="control" id="right">AIM RIGHT ▶</button><button class="control" id="shoot">SHOOT ⚽</button></div><div class="gamehint">Move your aim, then shoot. The AI goalkeeper reacts faster as you score.</div>`);
+  const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,score=0,goals=0,shots=8,aim=.5,keeper=.5,dir=1,raf,run=true;
+  function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();
+  $('#left').onclick=()=>aim=Math.max(.12,aim-.08);$('#right').onclick=()=>aim=Math.min(.88,aim+.08);
+  $('#shoot').onclick=()=>{if(!run)return;shots--;$('#n').textContent=shots;let chance=.72-Math.abs(aim-keeper)*.65;if(Math.random()<chance){goals++;score+=150+Math.floor(Math.abs(aim-keeper)*100);$('#g').textContent=goals;$('#s').textContent=score}if(!shots){run=false;cancelAnimationFrame(raf);finish('soccer','Soccer Match Complete!',score)}};
+  function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#07551f';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#fff9';ctx.strokeRect(w*.12,h*.15,w*.76,h*.48);ctx.font='70px system-ui';ctx.textAlign='center';ctx.fillText('🥅',keeper*w,h*.3);ctx.font='55px system-ui';ctx.fillText('⚽',aim*w,h*.78)}
+  function frame(){if(!run)return;keeper+=dir*(.003+AidenAI.difficulty()*.0015);if(keeper>.86||keeper<.14)dir*=-1;draw();raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);
+  cleanup=()=>{run=false;cancelAnimationFrame(raf)}
+}
+
+function hockey(){
+  shell('hockey',`<div class="hud"><span>🏒 Score <b id="s">0</b></span><span>🥅 Goals <b id="g">0</b></span><span>🎯 Shots <b id="n">10</b></span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="controls"><button class="control" id="left">◀ LEFT</button><button class="control" id="right">RIGHT ▶</button><button class="control" id="shoot">SLAP SHOT 💥</button></div><div class="gamehint">Aim around the moving goalie and fire a slap shot. Hit the corners for bonus points.</div>`);
+  const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,score=0,goals=0,shots=10,aim=.5,goalie=.5,dir=1,raf,run=true;
+  function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();
+  $('#left').onclick=()=>aim=Math.max(.08,aim-.08);$('#right').onclick=()=>aim=Math.min(.92,aim+.08);
+  $('#shoot').onclick=()=>{if(!run)return;shots--;$('#n').textContent=shots;let gap=Math.abs(aim-goalie),win=Math.random()<(.62+gap*.22);if(win){goals++;score+=gap>.25?250:150;$('#g').textContent=goals;$('#s').textContent=score}if(!shots){run=false;cancelAnimationFrame(raf);finish('hockey','Hockey Showdown Complete!',score)}};
+  function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#dff7ff';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#6aa5c8';ctx.lineWidth=4;ctx.strokeRect(w*.1,h*.12,w*.8,h*.72);ctx.font='68px system-ui';ctx.textAlign='center';ctx.fillText('🥅',goalie*w,h*.28);ctx.font='48px system-ui';ctx.fillText('🏒',aim*w,h*.76);ctx.font='34px system-ui';ctx.fillText('⚫',aim*w,h*.63)}
+  function frame(){if(!run)return;goalie+=dir*(.003+AidenAI.difficulty()*.001);if(goalie>.88||goalie<.12)dir*=-1;draw();raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);
+  cleanup=()=>{run=false;cancelAnimationFrame(raf)}
+}
+
+
+function street(){
+ shell('street',`<div class="hud"><span>🏎️ Score <b id="s">0</b></span><span>❤️ Lives <b id="l">3</b></span><span>⚡ Nitro <b id="n">100</b></span><span>🏁 Distance <b id="d">0</b>m</span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="controls"><button class="control" id="left">◀ LEFT</button><button class="control" id="right">RIGHT ▶</button><button class="control" id="nitro">NITRO ⚡</button></div><div class="gamehint">Dodge traffic and survive the neon highway. Use A/D or arrow keys; Nitro gives a short speed burst.</div>`);
+ const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,x=.5,score=0,lives=3,nitro=100,distance=0,items=[],last=performance.now(),spawn=0,raf,run=true,keys=new Set(),boost=1;
+ function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();
+ const kd=e=>keys.add(e.key.toLowerCase()),ku=e=>keys.delete(e.key.toLowerCase());addEventListener('keydown',kd);addEventListener('keyup',ku);
+ $('#left').onclick=()=>x-=.07;$('#right').onclick=()=>x+=.07;$('#nitro').onclick=()=>{if(nitro>=25){nitro-=25;boost=2.2;setTimeout(()=>boost=1,700)}};
+ function add(){items.push({x:.12+Math.random()*.76,y:-.12,v:.28+Math.random()*.12})}
+ function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#08101d';ctx.fillRect(0,0,w,h);ctx.fillStyle='#20263a';ctx.fillRect(w*.2,0,w*.6,h);ctx.strokeStyle='#f8d84a';ctx.lineWidth=5;for(let y=-80+(performance.now()*.35%80);y<h;y+=80){ctx.beginPath();ctx.moveTo(w*.5,y);ctx.lineTo(w*.5,y+42);ctx.stroke()}ctx.font='48px system-ui';ctx.textAlign='center';ctx.fillText('🏎️',x*w,h-55);items.forEach(o=>ctx.fillText('🚘',o.x*w,o.y*h))}
+ function frame(t){if(!run)return;let dt=Math.min(.04,(t-last)/1000);last=t;let diff=AidenAI.difficulty();if(keys.has('arrowleft')||keys.has('a'))x-=dt*.8*boost;if(keys.has('arrowright')||keys.has('d'))x+=dt*.8*boost;x=Math.max(.27,Math.min(.73,x));nitro=Math.min(100,nitro+10*dt);distance+=dt*70*boost;score+=Math.floor(dt*25*boost);spawn+=dt;if(spawn>.62/diff){add();spawn=0}for(let i=items.length-1;i>=0;i--){let o=items[i];o.y+=o.v*dt*boost;if(o.y>.82&&Math.abs(o.x-x)<.1){lives--;items.splice(i,1);if(lives<=0){run=false;finish('street','Street Race Over!',score)}}else if(o.y>1){score+=50;items.splice(i,1)}}$('#s').textContent=score;$('#l').textContent=lives;$('#n').textContent=Math.floor(nitro);$('#d').textContent=Math.floor(distance);draw();raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);
+ cleanup=()=>{run=false;cancelAnimationFrame(raf);removeEventListener('keydown',kd);removeEventListener('keyup',ku)}
+}
+
+function drift(){
+ shell('drift',`<div class="hud"><span>🚗 Score <b id="s">0</b></span><span>🔥 Combo <b id="cbo">0</b>x</span><span>🏁 Lap <b id="lap">1</b>/3</span><span>⏱️ <b id="t">35</b>s</span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="controls"><button class="control" id="driftBtn">HOLD DRIFT 💨</button></div><div class="gamehint">Hold Drift while the car is on the curve. Release before the combo gets unstable.</div>`);
+ const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement,btn=$('#driftBtn');let w,h,dpr,score=0,combo=0,lap=1,time=35,run=true,raf,timer,drifting=false,angle=0;
+ function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();
+ btn.onpointerdown=()=>drifting=true;btn.onpointerup=()=>drifting=false;btn.onpointerleave=()=>drifting=false;
+ function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#0a1220';ctx.fillRect(0,0,w,h);ctx.strokeStyle='#586a87';ctx.lineWidth=75;ctx.beginPath();ctx.ellipse(w/2,h/2,w*.34,h*.38,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#e9d65c';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(w/2,h/2,w*.34,h*.38,0,0,Math.PI*2);ctx.stroke();let a=angle,rx=w*.34,ry=h*.38,x=w/2+Math.cos(a)*rx,y=h/2+Math.sin(a)*ry;ctx.font='52px system-ui';ctx.textAlign='center';ctx.fillText('🚗',x,y)}
+ function frame(){if(!run)return;angle+=.018;let onCurve=Math.sin(angle*2)>-.25;if(drifting&&onCurve){combo=Math.min(20,combo+.035);score+=Math.floor(3+combo)}else if(!drifting){combo=Math.max(0,combo-.08)}if(angle>Math.PI*2){angle-=Math.PI*2;lap++;if(lap>3){run=false;finish('drift','Drift Championship Won!',score);return}$('#lap').textContent=lap}$('#s').textContent=score;$('#cbo').textContent=Math.floor(combo);draw();raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);timer=setInterval(()=>{time--;$('#t').textContent=time;if(time<=0){run=false;clearInterval(timer);cancelAnimationFrame(raf);finish('drift','Drift Session Complete!',score)}},1000);cleanup=()=>{run=false;clearInterval(timer);cancelAnimationFrame(raf)}
+}
+
+function nitro(){
+ shell('nitro',`<div class="hud"><span>🏎️ Score <b id="s">0</b></span><span>🏁 Lap <b id="lap">1</b>/5</span><span>⚡ Boost <b id="b">100</b>%</span><span>🤖 AI <b id="ai">0</b>m</span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="controls"><button class="control" id="left">◀ LEFT</button><button class="control" id="right">RIGHT ▶</button><button class="control" id="boost">NITRO ⚡</button></div><div class="gamehint">Steer through the circuit and spend Nitro to outrun the AI. Avoid the barriers.</div>`);
+ const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,x=.5,score=0,lap=1,boost=100,ai=0,progress=0,last=performance.now(),raf,run=true,items=[],spawn=0,keys=new Set(),turbo=1;
+ function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();
+ const kd=e=>keys.add(e.key.toLowerCase()),ku=e=>keys.delete(e.key.toLowerCase());addEventListener('keydown',kd);addEventListener('keyup',ku);$('#left').onclick=()=>x-=.08;$('#right').onclick=()=>x+=.08;$('#boost').onclick=()=>{if(boost>=20){boost-=20;turbo=2.5;setTimeout(()=>turbo=1,650)}};
+ function add(){items.push({x:.27+Math.random()*.46,y:-.1,v:.35+Math.random()*.1})}
+ function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#132414';ctx.fillRect(0,0,w,h);ctx.fillStyle='#303238';ctx.fillRect(w*.18,0,w*.64,h);ctx.strokeStyle='#fff8';ctx.lineWidth=4;ctx.setLineDash([35,35]);ctx.beginPath();ctx.moveTo(w*.5,0);ctx.lineTo(w*.5,h);ctx.stroke();ctx.setLineDash([]);ctx.font='45px system-ui';ctx.textAlign='center';ctx.fillText('🏎️',x*w,h-55);items.forEach(o=>ctx.fillText('🚧',o.x*w,o.y*h))}
+ function frame(t){if(!run)return;let dt=Math.min(.04,(t-last)/1000);last=t;let diff=AidenAI.difficulty();if(keys.has('arrowleft')||keys.has('a'))x-=dt*.75*turbo;if(keys.has('arrowright')||keys.has('d'))x+=dt*.75*turbo;x=Math.max(.25,Math.min(.75,x));boost=Math.min(100,boost+7*dt);progress+=dt*.11*turbo;ai+=dt*(.07+diff*.012);score+=Math.floor(dt*30*turbo);spawn+=dt;if(spawn>.7/diff){add();spawn=0}for(let i=items.length-1;i>=0;i--){let o=items[i];o.y+=o.v*dt*turbo;if(o.y>.83&&Math.abs(o.x-x)<.1){score=Math.max(0,score-100);items.splice(i,1)}else if(o.y>1)items.splice(i,1)}if(progress>=1){progress=0;lap++;if(lap>5){run=false;finish('nitro','Nitro Circuit Champion!',score+1000);return}$('#lap').textContent=lap}if(ai>progress+1.8){run=false;finish('nitro','AI Won the Circuit!',score);return}$('#s').textContent=score;$('#b').textContent=Math.floor(boost);$('#ai').textContent=Math.floor(ai*100);draw();raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);cleanup=()=>{run=false;cancelAnimationFrame(raf);removeEventListener('keydown',kd);removeEventListener('keyup',ku)}
+}
+
+function rally(){
+ shell('rally',`<div class="hud"><span>🚙 Score <b id="s">0</b></span><span>❤️ Damage <b id="hp">100</b>%</span><span>🏁 Stage <b id="st">1</b>/4</span><span>⏱️ <b id="t">40</b>s</span></div><div class="gamebox"><canvas id="c"></canvas></div><div class="controls"><button class="control" id="left">◀ LEFT</button><button class="control" id="right">RIGHT ▶</button><button class="control" id="boost">4WD BOOST ⚡</button></div><div class="gamehint">Climb the mountain road, avoid rocks, and keep your damage above zero to win all four stages.</div>`);
+ const c=$('#c'),ctx=c.getContext('2d'),box=c.parentElement;let w,h,dpr,x=.5,score=0,hp=100,stage=1,time=40,last=performance.now(),raf,timer,run=true,rocks=[],spawn=0,keys=new Set(),boost=1,distance=0;
+ function size(){dpr=Math.min(devicePixelRatio||1,2);w=box.clientWidth;h=box.clientHeight;c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}size();const kd=e=>keys.add(e.key.toLowerCase()),ku=e=>keys.delete(e.key.toLowerCase());addEventListener('keydown',kd);addEventListener('keyup',ku);$('#left').onclick=()=>x-=.08;$('#right').onclick=()=>x+=.08;$('#boost').onclick=()=>{boost=2;setTimeout(()=>boost=1,700)};
+ function add(){rocks.push({x:.18+Math.random()*.64,y:-.1,v:.2+Math.random()*.14})}
+ function draw(){ctx.clearRect(0,0,w,h);ctx.fillStyle='#28411f';ctx.fillRect(0,0,w,h);ctx.fillStyle='#7b6952';ctx.beginPath();ctx.moveTo(w*.28,0);ctx.lineTo(w*.72,0);ctx.lineTo(w*.62,h);ctx.lineTo(w*.38,h);ctx.closePath();ctx.fill();ctx.strokeStyle='#d5b866';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(w*.38,0);ctx.lineTo(w*.43,h);ctx.moveTo(w*.62,0);ctx.lineTo(w*.57,h);ctx.stroke();ctx.font='45px system-ui';ctx.textAlign='center';ctx.fillText('🚙',x*w,h-55);rocks.forEach(o=>ctx.fillText('🪨',o.x*w,o.y*h))}
+ function frame(t){if(!run)return;let dt=Math.min(.04,(t-last)/1000);last=t;let diff=AidenAI.difficulty();if(keys.has('arrowleft')||keys.has('a'))x-=dt*.7*boost;if(keys.has('arrowright')||keys.has('d'))x+=dt*.7*boost;x=Math.max(.3,Math.min(.7,x));distance+=dt*.09*boost;score+=Math.floor(dt*22*boost);spawn+=dt;if(spawn>.6/diff){add();spawn=0}for(let i=rocks.length-1;i>=0;i--){let o=rocks[i];o.y+=o.v*dt*boost;if(o.y>.82&&Math.abs(o.x-x)<.095){hp-=12;score=Math.max(0,score-75);rocks.splice(i,1)}else if(o.y>1)rocks.splice(i,1)}if(distance>=1){distance=0;stage++;if(stage>4){run=false;finish('rally','Rally Rush Champion!',score+1200);return}$('#st').textContent=stage}$('#s').textContent=score;$('#hp').textContent=Math.max(0,Math.floor(hp));if(hp<=0){run=false;finish('rally','Rally Car Wrecked!',score);return}draw();raf=requestAnimationFrame(frame)}raf=requestAnimationFrame(frame);timer=setInterval(()=>{time--;$('#t').textContent=time;if(time<=0){run=false;clearInterval(timer);cancelAnimationFrame(raf);finish('rally','Rally Time Up!',score)}},1000);cleanup=()=>{run=false;clearInterval(timer);cancelAnimationFrame(raf);removeEventListener('keydown',kd);removeEventListener('keyup',ku)}
+}
+
+/* AIDEN SOCIAL APP */
+(()=>{
+ const KEY='aidenSocialV1', avatars=['🎮','😎','🏆','🚀','🔥','⭐','🎾','🕹️'];
+ let state=JSON.parse(localStorage.getItem(KEY)||'null')||{username:'Aiden Player',avatar:'🎮',posts:[],notes:[]};
+ const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+ const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const ago=t=>{let m=Math.floor((Date.now()-t)/60000);return m<1?'just now':m<60?m+'m ago':m<1440?Math.floor(m/60)+'h ago':Math.floor(m/1440)+'d ago'};
+ function render(){
+   $('#socialAvatar').textContent=state.avatar; $('#socialProfileName').textContent=state.username; $('#socialUsername').value=state.username;
+   $('#socialPostCount').textContent=state.posts.length; $('#socialLikeCount').textContent=state.posts.reduce((n,p)=>n+p.likes,0);
+   const q=($('#socialFeedSearch').value||'').toLowerCase();
+   const posts=state.posts.filter(p=>(p.text+' '+p.author).toLowerCase().includes(q));
+   $('#socialFeed').innerHTML=posts.length?posts.map(p=>`<article class="social-post" data-id="${p.id}"><div class="social-post-head"><div class="social-mini-avatar">${esc(p.avatar||'🎮')}</div><div><b>${esc(p.author)}</b><small>${ago(p.time)}</small></div></div><div class="social-post-text">${esc(p.text)}</div><div class="social-actions"><button class="social-btn secondary social-like">${p.liked?'💖':'🤍'} ${p.likes}</button><button class="social-btn secondary social-share">📤 Share</button>${p.author===state.username?'<button class="social-btn secondary social-delete">🗑️ Delete</button>':''}</div><div class="social-comments">${p.comments.map(c=>`<div class="social-comment"><strong>${esc(c.author)}</strong>${esc(c.text)}</div>`).join('')}</div><div class="social-row" style="margin-top:9px"><input class="social-input social-comment-input" maxlength="160" placeholder="Write a comment..."><button class="social-btn secondary social-comment-btn">Comment</button></div></article>`).join(''):'<div class="social-empty">No posts yet. Be the first to post! 🎮</div>';
+   $('#socialNotifications').innerHTML=state.notes.length?state.notes.slice(-5).reverse().map(n=>`<div class="social-note">${esc(n)}</div>`).join(''):'<div class="social-note">No notifications yet.</div>';
+ }
+ $('#socialSave').onclick=()=>{let n=$('#socialUsername').value.trim().replace(/\s+/g,' ');if(n){state.username=n;save();render()}};
+ $('#socialAvatarBtn').onclick=()=>{state.avatar=avatars[Math.floor(Math.random()*avatars.length)];save();render()};
+ $('#socialPostText').oninput=e=>$('#socialChars').textContent=e.target.value.length;
+ $('#socialPostBtn').onclick=()=>{let text=$('#socialPostText').value.trim();if(!text)return;state.posts.unshift({id:Date.now().toString(36)+Math.random().toString(36).slice(2),author:state.username,avatar:state.avatar,text,time:Date.now(),likes:0,liked:false,comments:[]});state.notes.push('You created a new post.');$('#socialPostText').value='';$('#socialChars').textContent='0';save();render()};
+ $('#socialFeedSearch').oninput=render;
+ $('#socialFeed').onclick=e=>{const post=e.target.closest('.social-post');if(!post)return;const p=state.posts.find(x=>x.id===post.dataset.id);if(!p)return;
+   if(e.target.closest('.social-like')){p.liked=!p.liked;p.likes+=p.liked?1:-1;if(p.liked)state.notes.push('You liked a post.');}
+   else if(e.target.closest('.social-delete')){state.posts=state.posts.filter(x=>x.id!==p.id);state.notes.push('Your post was deleted.')}
+   else if(e.target.closest('.social-comment-btn')){const input=post.querySelector('.social-comment-input'),text=input.value.trim();if(text){p.comments.push({author:state.username,text});state.notes.push('Your comment was added.');input.value='';}}
+   else if(e.target.closest('.social-share')){const share=p.text+' — '+p.author;if(navigator.share)navigator.share({title:'Aiden Social',text:share}).catch(()=>{});else navigator.clipboard?.writeText(share);state.notes.push('Post copied/shared.');}
+   save();render();
+ };
+ render();
+})();
+
+
+// SCHOOL LIFE section
+(()=>{const panel=$('#schoolPanel');let grade=95,energy=100;
+function show(t){panel.classList.add('show');panel.innerHTML=t;panel.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function update(){let g=grade>=90?'A+':grade>=80?'B':grade>=70?'C':'D';$('#schoolGPA').textContent=g}
+$$('[data-school]').forEach(b=>b.onclick=()=>{let type=b.dataset.school;
+ if(type==='class'){let qs=[['What is 5 + 7?',['10','12','14'],1],['Which planet is known as the Red Planet?',['Mars','Venus','Jupiter'],0],['How many days are in a week?',['5','6','7'],2]];let i=0,correct=0;function q(){let x=qs[i];show(`<div class="school-question">📚 Question ${i+1}/3: ${x[0]}</div><div class="school-options">${x[1].map((o,j)=>`<button class="school-option" data-a="${j}">${o}</button>`).join('')}</div><div class="school-progress"><span style="width:${i/3*100}%"></span></div>`);$$('.school-option').forEach(o=>o.onclick=()=>{if(+o.dataset.a===x[2]){correct++;grade=Math.min(100,grade+2)}else grade=Math.max(60,grade-2);i++;if(i<qs.length)q();else{update();show(`<h3>🎓 Class Complete!</h3><p>You got <b>${correct}/3</b> correct. Your grade is now <b>${$('#schoolGPA').textContent}</b>.</p><button class="school-btn" id="schoolClose">DONE</button>`);$('#schoolClose').onclick=()=>panel.classList.remove('show')}})}q()}
+ if(type==='pe'){let n=5;show(`<div class="school-question">🏃 PE Sprint</div><p>Click the button as fast as you can before the timer ends.</p><div class="hud"><span>⚡ Energy <b id="peEnergy">${energy}</b></span><span>🔥 Clicks <b id="peClicks">0</b></span><span>⏱️ <b id="peTime">5</b></span></div><button class="school-btn" id="peGo">RUN! 🏃</button>`);let clicks=0,time=5,go=true;$('#peGo').onclick=()=>{if(go){clicks++;$('#peClicks').textContent=clicks;energy=Math.max(0,energy-2);$('#peEnergy').textContent=energy}};let iv=setInterval(()=>{time--;$('#peTime').textContent=time;if(time<=0){clearInterval(iv);go=false;show(`<h3>🏆 PE Complete!</h3><p>You got <b>${clicks}</b> sprint points. Great workout!</p>`)}},1000)}
+ if(type==='lunch'){show(`<div class="school-question">🍎 Cafeteria</div><p>Choose your lunch:</p><div class="school-options">${[['🍕','Pizza'],['🥪','Sandwich'],['🥗','Salad'],['🍎','Fruit']].map(x=>`<button class="school-option" data-l="${x[1]}">${x[0]} ${x[1]}</button>`).join('')}</div>`);$$('[data-l]').forEach(o=>o.onclick=()=>show(`<h3>🍽️ Lunch: ${o.dataset.l}</h3><p>Lunch added to your school day! Energy restored.</p><button class="school-btn" id="lunchDone">CONTINUE DAY</button>`));setTimeout(()=>{$('#lunchDone')?.addEventListener('click',()=>panel.classList.remove('show'))},0)}
+ if(type==='schedule'){show(`<div class="school-question">🎒 Today's Schedule</div><div class="school-schedule"><div class="school-class"><b>8:00</b><span>📚 Math</span></div><div class="school-class"><b>9:00</b><span>🔬 Science</span></div><div class="school-class"><b>10:00</b><span>🏃 PE</span></div><div class="school-class"><b>11:00</b><span>🍎 Lunch</span></div><div class="school-class"><b>12:00</b><span>🎨 Art</span></div><div class="school-class"><b>1:00</b><span>💻 Computer Lab</span></div></div>`)}
+});update()})();
+</script>
+
+<script>
+(()=>{
+const planets=[
+{name:'Mercury',x:36,y:42,size:38,color:'radial-gradient(circle at 30% 30%,#ddd,#777 55%,#333)',habit:'0%',water:'0%',resource:'Metal',desc:'A tiny rocky world blazing close to the Sun.',cost:50},
+{name:'Venus',x:45,y:28,size:55,color:'radial-gradient(circle at 35% 30%,#ffe9a0,#d88725 65%,#71380d)',habit:'0%',water:'0%',resource:'Minerals',desc:'A hot world wrapped in thick clouds.',cost:70},
+{name:'Earth',x:67,y:34,size:64,color:'radial-gradient(circle at 35% 30%,#55c8ff,#1455a3 48%,#062d63)',habit:'100%',water:'71%',resource:'Rich',desc:'Our home planet and the best place to begin your mission.',cost:0},
+{name:'Mars',x:79,y:48,size:49,color:'radial-gradient(circle at 35% 30%,#ff9563,#a83a20 60%,#4d150d)',habit:'0%',water:'Trace',resource:'Iron',desc:'The red planet. Search for water and ancient clues.',cost:120},
+{name:'Jupiter',x:69,y:70,size:88,color:'linear-gradient(#d9b27c,#9a6239 22%,#f0d29a 40%,#7e4d2f 57%,#c28d5a 75%,#805033)',habit:'0%',water:'Clouds',resource:'Gas',desc:'The largest planet, with powerful storms.',cost:180},
+{name:'Saturn',x:48,y:80,size:70,color:'linear-gradient(#e4c98b,#96764a 70%,#5d452e)',habit:'0%',water:'Ice',resource:'Gas',desc:'A spectacular gas giant surrounded by icy rings.',cost:220},
+{name:'Uranus',x:29,y:70,size:58,color:'radial-gradient(circle at 35% 30%,#a8ffff,#318da3)',habit:'0%',water:'Ice',resource:'Ice',desc:'An icy giant rotating on its side.',cost:260},
+{name:'Neptune',x:18,y:51,size:57,color:'radial-gradient(circle at 35% 30%,#70b9ff,#254aa6 65%,#0c205e)',habit:'0%',water:'Ice',resource:'Ice',desc:'A deep-blue world with incredibly fast winds.',cost:300}
+];
+let selected=2, coins=500, science=0, fuel=100, visited=new Set();
+const $=id=>document.getElementById(id), solar=$('pqSolar');
+for(let i=1;i<=7;i++){let o=document.createElement('div');o.style.cssText=`position:absolute;border:1px solid #42627e55;border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);width:${120+i*75}px;height:${120+i*75}px`;solar.appendChild(o)}
+let sun=document.createElement('div');sun.style.cssText='position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:105px;height:105px;border-radius:50%;background:radial-gradient(circle,#fff6a0,#ffc72e 40%,#f57913 72%,#8e2c08);box-shadow:0 0 70px 25px #ff9d1c99';solar.appendChild(sun);
+planets.forEach((p,i)=>{let e=document.createElement('div');e.style.cssText=`position:absolute;left:${p.x}%;top:${p.y}%;transform:translate(-50%,-50%);width:${p.size}px;height:${p.size}px;border-radius:50%;background:${p.color};cursor:pointer;box-shadow:0 0 18px #4bd8ff55`;e.onclick=()=>select(i);solar.appendChild(e);});
+function sync(){$('pqCoins').textContent=coins;$('pqScience').textContent=science;$('pqFuel').textContent=fuel}
+function select(i){selected=i;let p=planets[i];$('pqName').textContent=p.name;$('pqDesc').textContent=p.desc;$('pqHabit').textContent=p.habit;$('pqWater').textContent=p.water;$('pqResource').textContent=p.resource;$('pqBig').style.background=p.color}
+function toast(t){if(window.showToast)window.showToast(t);else alert(t)}
+$('pqExplore').onclick=()=>{let p=planets[selected];if(fuel<10)return toast('⛽ Not enough fuel! Upgrade your ship.');if(coins<p.cost)return toast('🪙 You need '+p.cost+' coins to explore '+p.name);coins-=p.cost;fuel-=10;science+=25;visited.add(selected);if(visited.size===8){coins+=500;science+=200;toast('🏆 All planets visited! Bonus +500 coins +200 science!')}else toast('🚀 Mission complete! +25 science from '+p.name);sync()}
+$('pqUpgrade').onclick=()=>{if(coins<250)return toast('🪙 You need 250 coins for a fuel upgrade.');coins-=250;fuel=100;sync();toast('⬆️ Ship upgraded! Fuel restored to 100%.')}
+$('pqMission').onclick=()=>toast('📋 Missions: Land on Mars (+150 coins, +50 science) • Visit all 8 planets (+500 coins, +200 science).')
+select(2);sync();
+})();
+</script>
+
+</body>
+</html>
